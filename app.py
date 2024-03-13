@@ -114,9 +114,6 @@ def tobs():
 
 
 #5
-
-from flask import jsonify
-
 @app.route('/api/v1.0/start-end')
 def start_end():
     """Retrieve the TMIN, TAVG, and TMAX for a specified start and end date"""

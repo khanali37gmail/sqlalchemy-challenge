@@ -49,14 +49,13 @@ app = Flask(__name__)
 def home():
     return (
         f"Available Routes:<br/>"
-        f"<a href='/api/v1.0/precipitation'>/api/v1.0/precipitation</a><br/>"
-        f"<a href='/api/v1.0/stations'>/api/v1.0/stations</a><br/>"
-        f"<a href='/api/v1.0/tobs'>/api/v1.0/tobs</a><br/>"
-        f"/api/v1.0/&lt;start&gt;<br/>"
-        f"/api/v1.0/&lt;start&gt;/&lt;end&gt;"
+        f"<a href='/api/v1.0/precipitation'>/api/v1.0/precipitation  (Last 12 month)</a><br/>"
+        f"<a href='/api/v1.0/stations'>/api/v1.0/stations  ( List of Stations)</a><br/>"
+        f"<a href='/api/v1.0/tobs'>/api/v1.0/tobs   (Date and Temperature of most Active Stations previous year)</a><br/>"
+        f"<a href='/api/v1.0/start-end'>/api/v1.0/start-end  (MIN,AVG,MAX temperature)</a><br/>"
     )
 
-#1
+#2
 @app.route('/api/v1.0/precipitation')
 def precipitation():
     # Calculate the date one year ago from the most recent date
@@ -76,7 +75,7 @@ def precipitation():
 
     
 
-#2
+#3
 @app.route('/api/v1.0/stations')
 def stations():
     # Query distinct station IDs
@@ -89,7 +88,7 @@ def stations():
     return jsonify(stations_list)
 
 
-#3
+#4
 @app.route('/api/v1.0/tobs')
 def tobs():
     # Determine the most-active station
@@ -114,6 +113,42 @@ def tobs():
 
 
 
+#5
+
+from flask import jsonify
+
+@app.route('/api/v1.0/start-end')
+def start_end():
+    """Retrieve the TMIN, TAVG, and TMAX for a specified start and end date"""
+
+    # Specify the start and end dates
+    start_date = '2017-04-21'
+    end_date = '2017-06-23'
+
+    # Query to retrieve TMIN, TAVG, and TMAX for the specified date range
+    temp_stats = session.query(func.min(measurement.tobs),
+                               func.avg(measurement.tobs),
+                               func.max(measurement.tobs)).\
+        filter(measurement.date >= start_date,
+               measurement.date <= end_date).all()
+
+    # Close the session
+    session.close()
+
+    # Extract the temperature statistics from the query results
+    tmin, tavg, tmax = temp_stats[0]
+
+    # Construct the JSON response
+    response = {
+        "start_date": start_date,
+        "end_date": end_date,
+        "TMIN": tmin,
+        "TAVG": tavg,
+        "TMAX": tmax
+    }
+
+    # Return the JSON response
+    return jsonify(response)
 
 
 

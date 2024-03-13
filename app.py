@@ -52,10 +52,13 @@ def home():
         f"<a href='/api/v1.0/precipitation'>/api/v1.0/precipitation  (Last 12 month)</a><br/>"
         f"<a href='/api/v1.0/stations'>/api/v1.0/stations  ( List of Stations)</a><br/>"
         f"<a href='/api/v1.0/tobs'>/api/v1.0/tobs   (Date and Temperature of most Active Stations previous year)</a><br/>"
-        f"<a href='/api/v1.0/start-end'>/api/v1.0/start-end  (MIN,AVG,MAX temperature)</a><br/>"
+        f"<a href='/api/v1.0/start and end'>/api/v1.0/start-end  (MIN,AVG,MAX temperature)</a><br/>"
     )
 
-#2
+#2. Convert the query results from your precipitation analysis (i.e. retrieve only the last 12 months of data) 
+#to a dictionary using date as the key and prcp as the value.
+#Return the JSON representation of your dictionary.
+
 @app.route('/api/v1.0/precipitation')
 def precipitation():
     # Calculate the date one year ago from the most recent date
@@ -75,7 +78,7 @@ def precipitation():
 
     
 
-#3
+#3 Return a JSON list of stations from the dataset.
 @app.route('/api/v1.0/stations')
 def stations():
     # Query distinct station IDs
@@ -89,6 +92,10 @@ def stations():
 
 
 #4
+#Query the dates and temperature observations of the most-active station for the 
+#previous year of data.
+#Return a JSON list of temperature observations for the previous year.
+
 @app.route('/api/v1.0/tobs')
 def tobs():
     # Determine the most-active station
@@ -114,13 +121,13 @@ def tobs():
 
 
 #5
-@app.route('/api/v1.0/start-end')
+@app.route('/api/v1.0/start and end')
 def start_end():
     """Retrieve the TMIN, TAVG, and TMAX for a specified start and end date"""
 
     # Specify the start and end dates
-    start_date = '2017-04-21'
-    end_date = '2017-06-23'
+    start_date ='2017-01-01'
+    end_date = '2018-12-31'
 
     # Query to retrieve TMIN, TAVG, and TMAX for the specified date range
     temp_stats = session.query(func.min(measurement.tobs),
